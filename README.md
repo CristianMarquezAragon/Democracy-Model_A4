@@ -1,3 +1,7 @@
+# Estimación de Tiempos de Gobierno combinando Herramientas Estadísticas y Mecánica Gravitacional Clásica a partir de Sistemas de Voto por Periodos
+
+---
+
 # Modelo Matemático ($D \in [7, 2579]$ días)
 
 **Definición de constantes:**
