@@ -1,4 +1,4 @@
-**Modelo Matemático Definitivo ($D \in [7, 2579]$ días)**
+**Modelo Matemático ($D \in [7, 2579]$ días)**
 
 1. **Peso por Convicción ($w_i$):**
 
