@@ -63,12 +63,12 @@ Fijar un mínimo de 1 semana ($7$ días) y un máximo de $7$ años ($2579$ días
 Asumir que la convicción decae en proporción directa al ancho del intervalo $[a_i, b_i]$ es una simplificación intencionada para anular por completo la influencia de los votos indiferentes que abarcan el rango entero $[7, 2579]$.
 
 **3. Respuesta Cuadrática a la Polarización ($S^2$)**
-El uso del exponente $2$ sobre el índice $S$ reserva la gravedad del castigo únicamente para divisiones sociales profundas. Si la comunidad presenta desviaciones leves, la penalización es residual; si la sociedad se divide en dos bloques, la penalización se incrementa exponencialmente.
+El uso del exponente $2$ sobre el índice $S$ reserva la fuerza de atracción únicamente para divisiones sociales profundas. Si la comunidad presenta desviaciones leves, la fuerza de atracción es residual; si la sociedad se divide en dos bloques, la fuerza de atracción se incrementa exponencialmente.
 
-**4. Calibración del Factor $F = 8.5$ (Fuerza Máxima de Castigo)**
+**4. Calibración del Factor $F = 8.5$ (Fuerza Máxima de Atracción)**
 
-* **4.1. Techo de seguridad del sistema (75%):** El modelo establece que ninguna minoría de protesta puede absorber el $100%$ de la decisión. Se fija un límite teórico donde el castigo solo puede arrastrar el resultado hasta un 75% ($0.75$).
-* **4.2. Selección del parámetro $F = 8.5$:** El parámetro $F$ (de $0$ a $10$) actúa como un regulador comunitario. Al seleccionar $F = 8.5$, se activa el 85% ($8.5 / 10$) del castigo máximo permitido por el sistema:
+* **4.1. Techo de seguridad del sistema (75%):** El modelo establece que ninguna minoría de protesta puede absorber el $100%$ de la decisión. Se fija un límite teórico donde la fuerza de atracción solo puede arrastrar el resultado hasta un 75% ($0.75$).
+* **4.2. Selección del parámetro $F = 8.5$:** El parámetro $F$ (de $0$ a $10$) actúa como un regulador comunitario. Al seleccionar $F = 8.5$, se activa el 85% ($8.5 / 10$) de la fuerza de atracción máxima permitida por el sistema:
 
 $$W_{\text{máx}} = 0.75 \times \left(\frac{F}{10}\right)$$
 
@@ -80,4 +80,4 @@ $$\text{Tracción Máxima } (W_{\text{máx}}) = 0.75 \times 0.85 = \mathbf{0.637
 
 
 **5. Reparto de Fuerzas en Máxima Polarización**
-En un escenario de máxima dispersión ($S = 1$), el grupo hostil que vota por el mandato mínimo ejerce una tracción del 63.75% sobre el resultado final, mientras que el grupo que apoya el mandato largo conserva un 36.25% (100% - 63.75%) de resistencia. Esto estabiliza el resultado extremo en $1$ año y $3$ meses ($473$ días) en lugar de colapsar la presidencia al límite inferior de $7$ días.
+En un escenario de máxima dispersión ($S = 1$), el grupo minoritario que vota por el mandato mínimo ejerce una fuerza de atracción del 63.75% sobre el resultado final, mientras que el grupo que apoya el mandato largo conserva un 36.25% (100% - 63.75%) de resistencia. Esto estabiliza el resultado extremo en $1$ año y $3$ meses ($473$ días) en lugar de colapsar la presidencia al límite inferior de $7$ días.
