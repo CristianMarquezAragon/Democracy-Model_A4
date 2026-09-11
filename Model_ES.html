@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Mandato: Ecosistema Completo</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --accent-f: #fbbf24; 
+      --accent-p: #ef4444; 
+      --accent-x: #38bdf8;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 1050px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      margin: 0 0 8px 0;
+      color: var(--accent);
+    }
+
+    header p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* --- TABS --- */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-bottom: 2px solid #334155;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid transparent;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      background: #1e293b;
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #0f172a;
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .tab-content.active {
+      display: flex;
+    }
+
+    /* --- SHARED COMPONENTS --- */
+    .controls {
+      background: var(--card);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+      min-width: 250px;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    select, input[type="range"] {
+      width: 100%;
+      background: #0f172a;
+      color: var(--text);
+      border: 1px solid #334155;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 1rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .btn-action {
+      background-color: var(--accent);
+      color: #0f172a;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-action:hover {
+      background-color: var(--accent-hover);
+      color: #fff;
+    }
+
+    .btn-action:disabled {
+      background-color: #334155;
+      color: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+    }
+
+    .metric-card {
+      background: var(--card);
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .metric-card span {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .metric-card strong {
+      font-size: 1.25rem;
+      color: var(--text);
+    }
+
+    .metric-card.highlight strong {
+      color: #f8fafc; 
+      font-size: 1.2rem;
+    }
+
+    .canvas-container {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid #334155;
+    }
+
+    canvas {
+      width: 100%;
+      height: 450px;
+      display: block;
+    }
+
+    .legend {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 15px;
+      font-size: 0.85rem;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+    }
+
+    /* --- FORMULAS & TEXT BLOCKS --- */
+    .text-block {
+      background: var(--card);
+      padding: 24px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      line-height: 1.6;
+    }
+    
+    .text-block h2 {
+      margin-top: 0;
+      color: var(--accent);
+      border-bottom: 1px solid #334155;
+      padding-bottom: 10px;
+    }
+
+    .text-block h3 {
+      color: #f8fafc;
+      margin-top: 25px;
+    }
+
+    .formula-box {
+      background: #0f172a;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      font-family: monospace;
+      font-size: 1.1rem;
+      color: #cbd5e1;
+      margin: 15px 0;
+      overflow-x: auto;
+    }
+
+    .formula-title {
+      font-size: 0.85rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      font-weight: bold;
+      margin-bottom: 8px;
+      font-family: system-ui, sans-serif;
+    }
+
+    /* --- TRIPLE MODULADOR UI --- */
+    .modulator-group {
+      margin-top: 10px;
+    }
+    
+    .header-group {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .label-f { color: var(--accent-f); }
+    .label-p { color: var(--accent-p); }
+    .label-x { color: var(--accent-x); }
+
+    .value-display {
+      font-size: 1.5rem;
+      font-weight: bold;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .human-time {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: normal;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    input[type="range"] { -webkit-appearance: none; height: 6px; }
+
+    #sliderOldF::-webkit-slider-thumb { background: var(--accent-f); }
+    #sliderOldP::-webkit-slider-thumb { background: var(--accent-p); }
+    #sliderOldX::-webkit-slider-thumb { background: var(--accent-x); }
+
+    .link-icon {
+      text-align: center;
+      color: #475569;
+      font-size: 1.5rem;
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Sistema de Resolución de Mandatos</h1>
+    <p>Simulador y Desglose Analítico del Modelo Matématico Gravitacional</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('gravitacional')">1. Simulador Gravitacional</button>
+    <button class="tab-btn" onclick="switchTab('masivo')">2. Análisis Masivo (100k)</button>
+    <button class="tab-btn" onclick="switchTab('formulas')">3. Fórmulas Definitivas</button>
+    <button class="tab-btn" onclick="switchTab('historia')">4. Estimación F y Triple Modulador</button>
+  </div>
+
+  <!-- PESTAÑA 1: SIMULADOR GRAVITACIONAL -->
+  <div id="tabGravitacional" class="tab-content active">
+    <div class="controls">
+      <div class="control-group">
+        <label for="scenario">Escenario Poblacional (300 Votos)</label>
+        <select id="scenario" onchange="updateGravitacional()">
+          <option value="rand1">Caso Random 1 (Dispersión Caótica)</option>
+          <option value="rand2">Caso Random 2 (Bloques Aleatorios)</option>
+          <option value="rand3">Caso Random 3 (Ruido Uniforme)</option>
+          <option value="polarized" selected>Polarización Radical (30% [7, 30d], 30% [2500, 7a], 40% indiferentes)</option>
+          <option value="favor">Polarización No Radical: Mayoría a Favor (10% en contra / 90% a favor)</option>
+          <option value="contra">Polarización No Radical: Mayoría en Contra (90% en contra / 10% a favor)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="metrics">
+      <div class="metric-card">
+        <span>Ancla Corta ($T_{low}$)</span>
+        <strong id="mTlow">0 d</strong>
+      </div>
+      <div class="metric-card">
+        <span>Ancla Larga ($T_{high}$)</span>
+        <strong id="mThigh">0 d</strong>
+      </div>
+      <div class="metric-card">
+        <span>Fuerza Atracción ($W$)</span>
+        <strong id="mW">0%</strong>
+      </div>
+      <div class="metric-card highlight">
+        <span>Resultado Final ($T$)</span>
+        <strong id="mT">0 d</strong>
+      </div>
+    </div>
+
+    <div class="canvas-container">
+      <canvas id="simCanvas"></canvas>
+      <div class="legend">
+        <div class="legend-item"><div class="dot" style="background: rgba(239, 68, 68, 0.85); border: 1px solid #ef4444;"></div><span>Grupo Castigador</span></div>
+        <div class="legend-item"><div class="dot" style="background: rgba(59, 130, 246, 0.85); border: 1px solid #3b82f6;"></div><span>Grupo Sostén</span></div>
+        <div class="legend-item"><div class="dot" style="background: #000; border: 2px solid #fff;"></div><span>Resultado Final ($T$)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PESTAÑA 2: SIMULACIÓN MASIVA 100K -->
+  <div id="tabMasivo" class="tab-content">
+    <div class="controls">
+      <div class="control-group" style="flex: 0 1 auto;">
+        <button id="btnRun" class="btn-action" onclick="startMassSimulation()">Generar 100.000 Poblaciones</button>
+      </div>
+      <div id="statusText" style="font-weight: bold; color: #fbbf24;">Esperando ejecución...</div>
+    </div>
+
+    <div class="metrics">
+      <div class="metric-card"><span>Tiempo Medio Global</span><strong id="statMean">-</strong></div>
+      <div class="metric-card"><span>Tiempo Más Repetido (Moda)</span><strong id="statMode">-</strong></div>
+      <div class="metric-card"><span>Tiempo Mínimo Registrado</span><strong id="statMin">-</strong></div>
+    </div>
+
+    <div class="canvas-container">
+      <canvas id="histogramCanvas"></canvas>
+      <div class="legend" style="justify-content: space-between;">
+        <span><strong>Eje X:</strong> Días resultantes (7d a 7 años).</span>
+        <span><strong>Eje Y:</strong> Cantidad de comunidades.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PESTAÑA 3: FORMULAS DEL MODELO -->
+  <div id="tabFormulas" class="tab-content">
+    <div class="text-block">
+      <h2>Matemáticas del Modelo Definitivo</h2>
+      <p>El sistema opera en un dominio temporal estricto de <strong>[7 días, 2579 días]</strong> (1 semana a 7 años), con un rango total de <strong>2572 días</strong>. La fuerza de castigo está topada a un máximo absoluto del <strong>63.75%</strong>.</p>
+      
+      <h3>1. Peso de Convicción ($w_i$)</h3>
+      <p>Ignora votos genéricos y otorga poder a votos precisos. Un voto que abarca todo el mandato (indiferencia) tiene peso 0.</p>
+      <div class="formula-box">
+        <div class="formula-title">Fórmula</div>
+        w_i = 1 - (b_i - a_i) / 2572
+      </div>
+
+      <h3>2. Centro de Gravedad y Ancla Inferior</h3>
+      <p>Se utiliza el punto medio de cada voto ($m_i$). Calculamos la media global de la población ($T_0$) y la media exclusiva del grupo "castigador" ($T_{low}$), que servirá de ancla gravitacional.</p>
+      <div class="formula-box">
+        <div class="formula-title">Media Global ($T_0$)</div>
+        T_0 = Σ (w_i * m_i) / Σ w_i
+      </div>
+      <div class="formula-box">
+        <div class="formula-title">Ancla del Grupo Castigador ($T_{low}$)</div>
+        T_{low} = Σ_{m_i < T_0} (w_i * m_i) / Σ_{m_i < T_0} w_i
+      </div>
+
+      <h3>3. Índice Continuo de Dispersión Cuadrática ($S^2$)</h3>
+      <p>Calcula cuán dividida está la comunidad respecto al centro. Se eleva al cuadrado para perdonar pequeñas variaciones y castigar únicamente las fracturas sociales graves.</p>
+      <div class="formula-box">
+        <div class="formula-title">Dispersión y Normalización</div>
+        σ = √ [ Σ (w_i * (m_i - T_0)²) / Σ w_i ]<br>
+        S = σ / 1286
+      </div>
+
+      <h3>4. Fuerza de Atracción y Resultado ($T$)</h3>
+      <p>La fuerza de castigo es una combinación del tope arbitrario (63.75%) y el índice de dispersión cuadrático ($S^2$).</p>
+      <div class="formula-box">
+        <div class="formula-title">Resultado Final</div>
+        W = 0.6375 * S²<br><br>
+        T = (1 - W) * T_0 + W * T_{low}
+      </div>
+    </div>
+  </div>
+
+  <!-- PESTAÑA 4: ESTIMACION F Y TRIPLE MODULADOR -->
+  <div id="tabHistoria" class="tab-content">
+    <div class="text-block" style="margin-bottom: 0;">
+      <h2>La Constante F y el Límite de 7 Años</h2>
+      <p>Inicialmente, la fórmula contaba con un factor de penalización arbitrario <strong>F (0 a 10)</strong> y un límite de mandato <strong>X</strong> variable. Queríamos garantizar que, en el peor escenario de polarización radical (30% máximo y 30% mínimo), el resultado <strong>$p$</strong> fuera de aproximadamente <strong>1 año y 3 meses (473 días)</strong>.</p>
+      <p>La matemática demostró que todas las variables estaban entrelazadas. Para que el mínimo fuera 7 días, el máximo de mandato ($X$) fuera elegante (7 años = 2579 días) y el castigo extremo resultara en ~473 días, <strong>el factor F debía fijarse en 8.5</strong> (lo que equivale a un 63.75% de fuerza gravitacional máxima).</p>
+      
+      <h3 style="margin-bottom: 10px; color: var(--accent-x)">Triple Modulador (Motor Histórico)</h3>
+      <p style="font-size: 0.9rem; margin-top: 0;">Mueve los parámetros. Modificar la penalización <strong>F</strong> mantendrá fijo el límite <strong>X</strong> y recalculará la consecuencia de castigo <strong>p</strong>.</p>
+      
+      <div class="controls" style="flex-direction: column; align-items: stretch; gap: 15px; margin-top: 20px;">
+        <!-- Control F -->
+        <div class="modulator-group">
+          <div class="header-group">
+            <label class="label-f" for="sliderOldF">Factor Penalización (F)</label>
+            <div class="value-display" style="color: var(--accent-f);">
+              <span id="valOldF">8.5</span>
+              <span class="human-time" id="valOldW">W = 63.8%</span>
+            </div>
+          </div>
+          <input type="range" id="sliderOldF" min="0" max="10" step="0.1" value="8.5">
+        </div>
+        
+        <!-- Control P -->
+        <div class="modulator-group">
+          <div class="header-group">
+            <label class="label-p" for="sliderOldP">Resultado Polaridad Extrema (p)</label>
+            <div class="value-display" style="color: var(--accent-p);">
+              <span id="valOldP">473 d</span>
+              <span class="human-time" id="humanOldP">1 año, 3 meses</span>
+            </div>
+          </div>
+          <input type="range" id="sliderOldP" min="7" max="1500" step="1" value="473">
+        </div>
+        <div class="link-icon">⇅</div>
+        <!-- Control X -->
+        <div class="modulator-group">
+          <div class="header-group">
+            <label class="label-x" for="sliderOldX">Límite Superior Permitido (X)</label>
+            <div class="value-display" style="color: var(--accent-x);">
+              <span id="valOldX">2579 d</span>
+              <span class="human-time" id="humanOldX">7 años</span>
+            </div>
+          </div>
+          <input type="range" id="sliderOldX" min="7" max="10000" step="1" value="2579">
+        </div>
+      </div>
+
+      <div class="formula-box" style="text-align: center; margin-top: 20px;">
+        W = 0.075 * F <br>
+        X = [2(p - 7W) / (1 - W)] - 7 &nbsp;&nbsp;|&nbsp;&nbsp; p = (1 - W) * ((X + 7) / 2) + 7W
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // === CONSTANTES DEL MODELO ACTUAL ===
+  const MIN_DAY = 7;
+  const MAX_DAY = 2579;
+  const RANGE = MAX_DAY - MIN_DAY; 
+  const HALF_RANGE = RANGE / 2;    
+  const W_MAX = 0.6375;
+
+  // === UTILIDADES ===
+  function pseudoRandom(seed) {
+    let x = Math.sin(seed++) * 10000;
+    return x - Math.floor(x);
+  }
+
+  function formatHumanTimeLong(totalDays) {
+    totalDays = Math.round(totalDays);
+    if (totalDays === 0) return "0 días";
+    let y = Math.floor(totalDays / 365);
+    let rem = totalDays % 365;
+    let m = Math.floor(rem / 30);
+    let d = Math.round(rem % 30);
+    let parts = [];
+    if (y > 0) parts.push(y === 1 ? '1 año' : `${y} años`);
+    if (m > 0) parts.push(m === 1 ? '1 mes' : `${m} meses`);
+    if (d > 0) parts.push(d === 1 ? '1 día' : `${d} días`);
+    return parts.length === 0 ? "0 días" : parts.join(' ');
+  }
+
+  // MANEJO DE PESTAÑAS
+  function switchTab(tabName) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+    if (tabName === 'gravitacional') {
+      document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+      document.getElementById('tabGravitacional').classList.add('active');
+      updateGravitacional();
+    } else if (tabName === 'masivo') {
+      document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+      document.getElementById('tabMasivo').classList.add('active');
+      if(globalTResults) drawHistogram(globalTResults, globalMaxFreq);
+    } else if (tabName === 'formulas') {
+      document.querySelector('.tab-btn:nth-child(3)').classList.add('active');
+      document.getElementById('tabFormulas').classList.add('active');
+    } else if (tabName === 'historia') {
+      document.querySelector('.tab-btn:nth-child(4)').classList.add('active');
+      document.getElementById('tabHistoria').classList.add('active');
+    }
+  }
+
+  // ==========================================
+  // PESTAÑA 1: SIMULADOR GRAVITACIONAL
+  // ==========================================
+  function getScenarioVotes(type) {
+    let votes = [];
+    if (type === 'rand1') {
+      for (let i = 0; i < 300; i++) {
+        let a = Math.floor(pseudoRandom(i * 3 + 1) * 1500) + MIN_DAY;
+        let b = a + Math.floor(pseudoRandom(i * 7 + 2) * (MAX_DAY - a));
+        votes.push([a, b]);
+      }
+    } else if (type === 'rand2') {
+      for (let i = 0; i < 300; i++) {
+        let mid = Math.floor(pseudoRandom(i * 11 + 5) * RANGE) + MIN_DAY;
+        let span = Math.floor(pseudoRandom(i * 13 + 3) * 300);
+        votes.push([Math.max(MIN_DAY, mid - span), Math.min(MAX_DAY, mid + span)]);
+      }
+    } else if (type === 'rand3') {
+      for (let i = 0; i < 300; i++) {
+        let a = Math.floor(pseudoRandom(i * 17 + 9) * RANGE) + MIN_DAY;
+        let b = Math.floor(pseudoRandom(i * 19 + 4) * (MAX_DAY - a)) + a;
+        votes.push([a, b]);
+      }
+    } else if (type === 'polarized') {
+      for (let i = 0; i < 90; i++) votes.push([7, 30]);
+      for (let i = 0; i < 90; i++) votes.push([2500, MAX_DAY]);
+      for (let i = 0; i < 120; i++) votes.push([MIN_DAY, MAX_DAY]);
+    } else if (type === 'favor') {
+      for (let i = 0; i < 30; i++) votes.push([7, 30]);
+      for (let i = 0; i < 270; i++) votes.push([2500, MAX_DAY]);
+    } else if (type === 'contra') {
+      for (let i = 0; i < 270; i++) votes.push([7, 30]);
+      for (let i = 0; i < 30; i++) votes.push([2500, MAX_DAY]);
+    }
+    return votes;
+  }
+
+  function calculateModel(votes) {
+    let processed = votes.map(v => {
+      let m = (v[0] + v[1]) / 2;
+      let w = 1 - ((v[1] - v[0]) / RANGE);
+      return { m, w };
+    });
+
+    let sumW = processed.reduce((acc, p) => acc + p.w, 0);
+    let T0 = sumW === 0 ? (MIN_DAY + MAX_DAY)/2 : processed.reduce((acc, p) => acc + p.w * p.m, 0) / sumW;
+    let variance = sumW === 0 ? 0 : processed.reduce((acc, p) => acc + p.w * Math.pow(p.m - T0, 2), 0) / sumW;
+    
+    let S = Math.min(1, Math.sqrt(variance) / HALF_RANGE); 
+
+    let lowVotes = processed.filter(p => p.m < T0);
+    let sumWLow = lowVotes.reduce((acc, p) => acc + p.w, 0);
+    let Tlow = sumWLow === 0 ? T0 : lowVotes.reduce((acc, p) => acc + p.w * p.m, 0) / sumWLow;
+
+    let highVotes = processed.filter(p => p.m >= T0);
+    let sumWHigh = highVotes.reduce((acc, p) => acc + p.w, 0);
+    let Thigh = sumWHigh === 0 ? T0 : highVotes.reduce((acc, p) => acc + p.w * p.m, 0) / sumWHigh;
+
+    let totalWeight = sumWLow + sumWHigh;
+    let mLowRatio = totalWeight === 0 ? 0.5 : sumWLow / totalWeight;
+    let mHighRatio = totalWeight === 0 ? 0.5 : sumWHigh / totalWeight;
+
+    let W = W_MAX * Math.pow(S, 2);
+    let T = (1 - W) * T0 + W * Tlow;
+
+    let bins = new Array(MAX_DAY + 1).fill(0);
+    processed.forEach(p => {
+      let idx = Math.min(MAX_DAY, Math.max(MIN_DAY, Math.round(p.m)));
+      bins[idx] += p.w;
+    });
+    let maxDensity = 0;
+    for (let i = MIN_DAY; i <= MAX_DAY; i++) if (bins[i] > maxDensity) maxDensity = bins[i];
+
+    return { T0, Tlow, Thigh, mLowRatio, mHighRatio, S, W, T, bins, maxDensity };
+  }
+
+  function updateGravitacional() {
+    const select = document.getElementById('scenario');
+    const votes = getScenarioVotes(select.value);
+    const res = calculateModel(votes);
+
+    document.getElementById('mTlow').textContent = formatHumanTimeLong(res.Tlow);
+    document.getElementById('mThigh').textContent = formatHumanTimeLong(res.Thigh);
+    document.getElementById('mW').textContent = (res.W * 100).toFixed(1) + '%';
+    document.getElementById('mT').textContent = formatHumanTimeLong(res.T);
+
+    drawGravitacionalChart(res);
+  }
+
+  function drawGravitacionalChart(res) {
+    const canvas = document.getElementById('simCanvas');
+    if(canvas.offsetParent === null) return;
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+
+    const w = rect.width;
+    const h = rect.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const paddingLeft = 60, paddingRight = 60, paddingTop = 40, paddingBottom = 50;
+    const graphWidth = w - paddingLeft - paddingRight;
+    const graphHeight = h - paddingTop - paddingBottom;
+    const getX = (days) => paddingLeft + ((days - MIN_DAY) / RANGE) * graphWidth;
+    const axisY = paddingTop + graphHeight;
+    const yPlanets = paddingTop + graphHeight * 0.45;
+
+    let curMax = res.maxDensity === 0 ? 1 : res.maxDensity;
+    const getYDensity = (val) => axisY - (val / curMax) * (graphHeight * 0.35);
+
+    ctx.beginPath();
+    ctx.moveTo(getX(MIN_DAY), getYDensity(0));
+    for (let i = MIN_DAY; i <= MAX_DAY; i += 5) ctx.lineTo(getX(i), getYDensity(res.bins[i] || 0));
+    ctx.lineTo(getX(MAX_DAY), getYDensity(0));
+    ctx.fillStyle = 'rgba(51, 65, 85, 0.3)'; ctx.fill();
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.25)'; ctx.lineWidth = 1; ctx.stroke();
+
+    ctx.strokeStyle = '#334155'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(paddingLeft, axisY); ctx.lineTo(paddingLeft + graphWidth, axisY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(paddingLeft, paddingTop); ctx.lineTo(paddingLeft, axisY); ctx.stroke();
+
+    ctx.fillStyle = '#94a3b8'; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+    const labels = [
+      { d: 7, text: '7d' }, { d: 365, text: '1 Año' }, 
+      { d: 1095, text: '3 Años' }, { d: 1825, text: '5 Años' }, 
+      { d: 2579, text: '7 Años' }
+    ];
+    labels.forEach(lbl => {
+      ctx.fillText(lbl.text, getX(lbl.d), axisY + 18);
+      ctx.beginPath(); ctx.moveTo(getX(lbl.d), axisY); ctx.lineTo(getX(lbl.d), axisY + 5);
+      ctx.strokeStyle = '#475569'; ctx.stroke();
+    });
+
+    const xLow = getX(res.Tlow), xHigh = getX(res.Thigh);
+    ctx.beginPath(); ctx.moveTo(xLow, yPlanets); ctx.lineTo(xHigh, yPlanets);
+    ctx.strokeStyle = '#475569'; ctx.lineWidth = 2; ctx.setLineDash([4, 4]); ctx.stroke(); ctx.setLineDash([]);
+
+    const minR = 12, maxR = 32;
+    const rLow = minR + (maxR - minR) * Math.sqrt(res.mLowRatio);
+    const rHigh = minR + (maxR - minR) * Math.sqrt(res.mHighRatio);
+    const redAuraMultiplier = 1 + res.W * 1.5; 
+    const blueAuraMultiplier = 1 + (1 - res.W) * 0.2;
+
+    ctx.beginPath(); ctx.arc(xLow, yPlanets, rLow * redAuraMultiplier, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(239, 68, 68, 0.9)'; ctx.lineWidth = 2.5; ctx.stroke();
+    ctx.beginPath(); ctx.arc(xLow, yPlanets, rLow, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(239, 68, 68, 0.85)'; ctx.fill(); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2; ctx.stroke();
+
+    ctx.beginPath(); ctx.arc(xHigh, yPlanets, rHigh * blueAuraMultiplier, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(59, 130, 246, 0.9)'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.beginPath(); ctx.arc(xHigh, yPlanets, rHigh, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(59, 130, 246, 0.85)'; ctx.fill(); ctx.strokeStyle = '#3b82f6'; ctx.lineWidth = 2; ctx.stroke();
+
+    const xT = getX(res.T);
+    ctx.setLineDash([3, 3]); ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(248, 250, 252, 0.5)';
+    ctx.beginPath(); ctx.moveTo(xT, yPlanets); ctx.lineTo(xT, axisY); ctx.stroke(); ctx.setLineDash([]);
+
+    ctx.beginPath(); ctx.arc(xT, yPlanets, 9, 0, Math.PI * 2);
+    ctx.fillStyle = '#000000'; ctx.fill();
+    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2.5; ctx.stroke();
+    
+    ctx.fillStyle = '#ffffff'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(`${formatHumanTimeLong(res.T)}`, xT, yPlanets - 20);
+  }
+
+  // ==========================================
+  // PESTAÑA 2: SIMULACIÓN MASIVA
+  // ==========================================
+  let globalTResults = null;
+  let globalMaxFreq = 1000;
+
+  function startMassSimulation() {
+    const btn = document.getElementById('btnRun');
+    const status = document.getElementById('statusText');
+    btn.disabled = true;
+    status.textContent = "Calculando 30 Millones de votos...";
+    status.style.color = "#fbbf24";
+    setTimeout(runHeavySimulation, 50);
+  }
+
+  function runHeavySimulation() {
+    const NUM_SIMULATIONS = 100000;
+    const NUM_VOTERS = 300;
+    
+    if (!globalTResults) globalTResults = new Int32Array(MAX_DAY + 1);
+    globalTResults.fill(0);
+    
+    let sumTotalT = 0, minT = MAX_DAY;
+    let ms = new Float32Array(NUM_VOTERS);
+    let ws = new Float32Array(NUM_VOTERS);
+
+    for (let sim = 0; sim < NUM_SIMULATIONS; sim++) {
+      let numClusters = Math.floor(Math.random() * 3) + 1;
+      let clusters = [];
+      let weightSum = 0;
+      for(let c = 0; c < numClusters; c++) {
+        let w = Math.random();
+        clusters.push({ center: Math.random() * RANGE + MIN_DAY, spread: Math.random() * 300 + 10, weight: w });
+        weightSum += w;
+      }
+      for(let c = 0; c < numClusters; c++) clusters[c].weight /= weightSum;
+
+      let sumW = 0, sumWM = 0;
+      for (let i = 0; i < NUM_VOTERS; i++) {
+        let r = Math.random(), cw = 0, cluster = clusters[0];
+        for(let c = 0; c < numClusters; c++) {
+          cw += clusters[c].weight;
+          if (r <= cw) { cluster = clusters[c]; break; }
+        }
+        let mid = cluster.center + (Math.random() * 2 - 1) * cluster.spread;
+        let halfSpan = Math.random() * 100; 
+        let a = mid - halfSpan, b = mid + halfSpan;
+        if (a < MIN_DAY) a = MIN_DAY;
+        if (b > MAX_DAY) b = MAX_DAY;
+        if (a > b) { let temp = a; a = b; b = temp; }
+
+        let m = (a + b) / 2;
+        let w = 1 - ((b - a) / RANGE);
+        ms[i] = m; ws[i] = w;
+        sumW += w; sumWM += w * m;
+      }
+
+      let T0 = sumW === 0 ? (MIN_DAY + MAX_DAY)/2 : sumWM / sumW;
+      let sumWVar = 0, sumWLow = 0, sumWMLow = 0;
+      for (let i = 0; i < NUM_VOTERS; i++) {
+        let w = ws[i], m = ms[i], diff = m - T0;
+        sumWVar += w * (diff * diff);
+        if (m < T0) { sumWLow += w; sumWMLow += w * m; }
+      }
+      let variance = sumW === 0 ? 0 : sumWVar / sumW;
+      let S = Math.min(1, Math.sqrt(variance) / HALF_RANGE);
+      let Tlow = sumWLow === 0 ? T0 : sumWMLow / sumWLow;
+      let W = W_MAX * (S * S);
+      let T = (1 - W) * T0 + W * Tlow;
+      let T_int = Math.round(T);
+      if (T_int < MIN_DAY) T_int = MIN_DAY;
+      if (T_int > MAX_DAY) T_int = MAX_DAY;
+
+      globalTResults[T_int]++;
+      sumTotalT += T;
+      if (T < minT) minT = T;
+    }
+
+    let meanT = sumTotalT / NUM_SIMULATIONS;
+    let modeT = MIN_DAY;
+    globalMaxFreq = 0;
+    for (let i = MIN_DAY; i <= MAX_DAY; i++) {
+      if (globalTResults[i] > globalMaxFreq) { globalMaxFreq = globalTResults[i]; modeT = i; }
+    }
+
+    document.getElementById('statMean').textContent = formatHumanTimeLong(meanT);
+    document.getElementById('statMode').textContent = formatHumanTimeLong(modeT);
+    document.getElementById('statMin').textContent = formatHumanTimeLong(minT);
+    const status = document.getElementById('statusText');
+    status.textContent = "¡Simulación Completada!";
+    status.style.color = "#34d399";
+    document.getElementById('btnRun').disabled = false;
+    drawHistogram(globalTResults, globalMaxFreq);
+  }
+
+  function drawHistogram(dataArray, maxFreq) {
+    const canvas = document.getElementById('histogramCanvas');
+    if(canvas.offsetParent === null) return;
+    const ctx = canvas.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+
+    canvas.width = rect.width * dpr; canvas.height = rect.height * dpr; ctx.scale(dpr, dpr);
+    const w = rect.width, h = rect.height; ctx.clearRect(0, 0, w, h);
+
+    const padding = { top: 20, right: 30, bottom: 45, left: 60 };
+    const graphW = w - padding.left - padding.right;
+    const graphH = h - padding.top - padding.bottom;
+    const barWidth = graphW / RANGE;
+
+    const numYDivisions = 5; 
+    ctx.fillStyle = '#94a3b8'; ctx.font = '11px sans-serif'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    for (let i = 0; i <= numYDivisions; i++) {
+      let val = (maxFreq / numYDivisions) * i;
+      let y = padding.top + graphH - (val / maxFreq) * graphH;
+      ctx.beginPath(); ctx.moveTo(padding.left - 5, y); ctx.lineTo(padding.left + graphW, y);
+      ctx.strokeStyle = i === 0 ? '#475569' : '#1e293b'; ctx.lineWidth = i === 0 ? 2 : 1; ctx.stroke();
+      if (maxFreq >= 100) ctx.fillText(Math.round(val).toLocaleString(), padding.left - 10, y);
+    }
+
+    if (dataArray) {
+      let grad = ctx.createLinearGradient(0, padding.top, 0, padding.top + graphH);
+      grad.addColorStop(0, '#38bdf8'); grad.addColorStop(1, '#0284c7');
+      ctx.fillStyle = grad;
+      for (let i = MIN_DAY; i <= MAX_DAY; i++) {
+        let freq = dataArray[i];
+        if (freq > 0) {
+          let barH = (freq / maxFreq) * graphH;
+          let x = padding.left + ((i - MIN_DAY) / RANGE) * graphW;
+          let y = padding.top + graphH - barH;
+          ctx.fillRect(x, y, barWidth > 1 ? barWidth - 0.2 : Math.max(0.5, barWidth), barH);
+        }
+      }
+    }
+
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.fillStyle = '#94a3b8';
+    const labels = [
+      { d: 7, text: '7d' }, { d: 365, text: '1 Año' }, 
+      { d: 1095, text: '3 Años' }, { d: 1825, text: '5 Años' }, 
+      { d: 2579, text: '7 Años' }
+    ];
+    labels.forEach(lbl => {
+      let x = padding.left + ((lbl.d - MIN_DAY) / RANGE) * graphW;
+      ctx.beginPath(); ctx.moveTo(x, padding.top + graphH); ctx.lineTo(x, padding.top + graphH + 6);
+      ctx.strokeStyle = '#475569'; ctx.stroke();
+      ctx.fillText(lbl.text, x, padding.top + graphH + 10);
+    });
+  }
+
+  // ==========================================
+  // PESTAÑA 4: TRIPLE MODULADOR
+  // ==========================================
+  const sliderOldF = document.getElementById('sliderOldF');
+  const sliderOldP = document.getElementById('sliderOldP');
+  const sliderOldX = document.getElementById('sliderOldX');
+
+  function getOldW() {
+    let f = parseFloat(sliderOldF.value);
+    document.getElementById('valOldF').textContent = f.toFixed(1);
+    let w = 0.075 * f; 
+    document.getElementById('valOldW').textContent = `W = ${(w * 100).toFixed(1)}%`;
+    return w;
+  }
+
+  function updateOldFromX() {
+    let w = getOldW();
+    let x = parseFloat(sliderOldX.value);
+    let p = (1 - w) * ((x + 7) / 2) + (7 * w);
+    sliderOldP.value = p;
+    document.getElementById('valOldX').textContent = `${Math.round(x)} d`;
+    document.getElementById('humanOldX').textContent = formatHumanTimeLong(x);
+    document.getElementById('valOldP').textContent = `${Math.round(p)} d`;
+    document.getElementById('humanOldP').textContent = formatHumanTimeLong(p);
+  }
+
+  function updateOldFromP() {
+    let w = getOldW();
+    let p = parseFloat(sliderOldP.value);
+    // X = [2(p - 7W) / (1 - W)] - 7
+    let x = ((2 * (p - (7 * w))) / (1 - w)) - 7;
+    if (x < 7) x = 7; 
+    sliderOldX.value = x;
+    document.getElementById('valOldP').textContent = `${Math.round(p)} d`;
+    document.getElementById('humanOldP').textContent = formatHumanTimeLong(p);
+    document.getElementById('valOldX').textContent = `${Math.round(x)} d`;
+    document.getElementById('humanOldX').textContent = formatHumanTimeLong(x);
+  }
+
+  sliderOldF.addEventListener('input', updateOldFromX);
+  sliderOldX.addEventListener('input', updateOldFromX);
+  sliderOldP.addEventListener('input', updateOldFromP);
+
+  // Resize handler
+  window.addEventListener('resize', () => {
+    if (document.getElementById('tabGravitacional').classList.contains('active')) updateGravitacional();
+    if (document.getElementById('tabMasivo').classList.contains('active')) drawHistogram(globalTResults, globalMaxFreq);
+  });
+
+  // Init
+  updateGravitacional();
+  updateOldFromX();
+</script>
+</body>
+</html>
