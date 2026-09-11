@@ -55,17 +55,17 @@ El uso del exponente $2$ sobre el índice $S$ reserva la gravedad del castigo ú
 
 **4. Calibración del Factor $F = 8.5$ (Fuerza Máxima de Castigo)**
 
-* **4.1. Techo de seguridad del sistema ($75\%$):** El modelo establece que ninguna minoría de protesta puede absorber el $100\%$ de la decisión. Se fija un límite teórico donde el castigo solo puede arrastrar el resultado hasta un $75\%$ ($0.75$).
-* **4.2. Selección del parámetro $F = 8.5$:** El parámetro $F$ (de $0$ a $10$) actúa como un regulador comunitario. Al seleccionar $F = 8.5$, se activa el $85\%$ ($8.5 / 10$) del castigo máximo permitido por el sistema:
+* **4.1. Techo de seguridad del sistema (75%):** El modelo establece que ninguna minoría de protesta puede absorber el $100%$ de la decisión. Se fija un límite teórico donde el castigo solo puede arrastrar el resultado hasta un 75% ($0.75$).
+* **4.2. Selección del parámetro $F = 8.5$:** El parámetro $F$ (de $0$ a $10$) actúa como un regulador comunitario. Al seleccionar $F = 8.5$, se activa el 85% ($8.5 / 10$) del castigo máximo permitido por el sistema:
 
 $$W_{\text{máx}} = 0.75 \times \left(\frac{F}{10}\right)$$
 
 
 * **4.3. Tracción resultante:** Multiplicando el techo de seguridad por el nivel de severidad elegido, se obtiene la fuerza de atracción final:
 
-$$\text{Tracción Máxima } (W_{\text{máx}}) = 0.75 \times 0.85 = \mathbf{0.6375 \quad (63.75\%)}$$
+$$\text{Tracción Máxima } (W_{\text{máx}}) = 0.75 \times 0.85 = \mathbf{0.6375 \quad }$$ (63.75%)
 
 
 
 **5. Reparto de Fuerzas en Máxima Polarización**
-En un escenario de máxima dispersión ($S = 1$), el grupo hostil que vota por el mandato mínimo ejerce una tracción del $63.75\%$ sobre el resultado final, mientras que el grupo que apoya el mandato largo conserva un $36.25\%$ ($100\% - 63.75\%$) de resistencia. Esto estabiliza el resultado extremo en $1$ año y $3$ meses ($473$ días) en lugar de colapsar la presidencia al límite inferior de $7$ días.
+En un escenario de máxima dispersión ($S = 1$), el grupo hostil que vota por el mandato mínimo ejerce una tracción del 63.75% sobre el resultado final, mientras que el grupo que apoya el mandato largo conserva un 36.25% (100% - 63.75%) de resistencia. Esto estabiliza el resultado extremo en $1$ año y $3$ meses ($473$ días) en lugar de colapsar la presidencia al límite inferior de $7$ días.
