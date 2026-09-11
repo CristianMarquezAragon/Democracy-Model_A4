@@ -9,7 +9,15 @@
 * Mínimo absoluto ($D_{\text{min}}$): $7$ días ($1$ semana)
 * Máximo absoluto ($D_{\text{máx}}$): $2579$ días ($7$ años)
 * Rango Total ($R$): $2579 - 7 = 2572$ días
-* Semirrango ($\frac{R}{2}$): $1286$ días
+
+**Definición de variables:**
+
+* $n$: número total de votantes
+* $a_i$: límite inferior del intervalo de preferencia del votante $i$, con $7 \leq a_i \leq 2579$ 
+* $b_i$: límite superior del intervalo de preferencia del votante $i$, con $a_i \leq b_i \leq 2579$
+* $m_i$: punto medio del intervalo de preferencia del votante $i$, definido como $m_i = \frac{a_i+b_i}{2}$
+
+---
 
 1. **Peso por Convicción ($w_i$):**
 
