@@ -26,7 +26,7 @@ $$w_i = 1 - \frac{b_i - a_i}{R}$$
 
 2. **Centro de Gravedad Inicial ($t_0$):**
 
-$$t_0 = \frac{\sum_{i=1}^{n} w_i \cdot m_i}{\sum_{i=1}^{n} w_i} \quad \text{donde } m_i = \frac{a_i + b_i}{2}$$
+$$t_0 = \frac{\sum_{i=1}^{n} w_i \cdot m_i}{\sum_{i=1}^{n} w_i} \quad \text{; } m_i = \frac{a_i + b_i}{2}$$
 
 
 3. **Ancla del Grupo Inferior ($t_{\text{low}}$):**
@@ -36,7 +36,7 @@ $$t_{\text{low}} = \frac{\sum_{m_i < t_0} w_i \cdot m_i}{\sum_{m_i < t_0} w_i}$$
 
 4. **Índice Continuo de Dispersión ($S$):**
 
-$$S = \frac{2·\sigma}{R} \quad \text{donde } \sigma = \sqrt{\frac{\sum_{i=1}^{n} w_i (m_i - t_0)^2}{\sum_{i=1}^{n} w_i}}$$
+$$S = \frac{2·\sigma}{R} \quad \text{; } \sigma = \sqrt{\frac{\sum_{i=1}^{n} w_i (m_i - t_0)^2}{\sum_{i=1}^{n} w_i}}$$
 
 
 5. **Fuerza de Atracción Gravitacional ($W$):**
