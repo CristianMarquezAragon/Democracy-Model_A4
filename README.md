@@ -7,8 +7,9 @@
 **Definición de constantes:**
 
 * Mínimo absoluto ($D_{\text{min}}$): $7$ días ($1$ semana)
-* Máximo absoluto ($D_{\text{máx}}$): $2579$ días ($7$ años)
+* Máximo absoluto ($D_{\text{max}}$): $2579$ días ($7$ años)
 * Rango Total ($R$): $2579 - 7 = 2572$ días
+* Desviación típica máxima: $\sigma_{\text{max}} = \frac{R}{2}$
 
 **Definición de variables:**
 
@@ -34,14 +35,14 @@ $$t_0 = \frac{\sum_{i=1}^{n} w_i \cdot m_i}{\sum_{i=1}^{n} w_i} \quad \text{; } 
 $$t_{\text{low}} = \frac{\sum_{m_i < t_0} w_i \cdot m_i}{\sum_{m_i < t_0} w_i}$$
 
 
-4. **Índice Continuo de Dispersión ($S$):**
+4. **Índice Continuo de Dispersión ($S$) | Varianza = $\sigma^2$:**
 
-$$S = \frac{2·\sigma}{R} \quad \text{; } \sigma = \sqrt{\frac{\sum_{i=1}^{n} w_i (m_i - t_0)^2}{\sum_{i=1}^{n} w_i}}$$
+$$S = \frac{\sigma}{\sigma_{\text{max}}} = \frac{2\sigma}{R} \quad \text{; } \sigma = \sqrt{\frac{\sum_{i=1}^{n} w_i (m_i - t_0)^2}{\sum_{i=1}^{n} w_i}}$$
 
 
 5. **Fuerza de Atracción Gravitacional ($W$):**
 
-$$W = 0.6375 \cdot S^2$$
+$$W = W_{\text{max}} \cdot S^2 = 0.6375 \cdot S^2$$
 
 
 6. **tiempo Final de Mandato ($t$):**
@@ -67,17 +68,17 @@ El uso del exponente $2$ sobre el índice $S$ reserva la fuerza de atracción ú
 
 **4. Calibración del Factor $F = 8.5$ (Fuerza Máxima de Atracción)**
 
-* **4.1. Techo de seguridad del sistema (75%):** El modelo establece que ninguna minoría de protesta puede absorber el $100%$ de la decisión. Se fija un límite teórico donde la fuerza de atracción solo puede arrastrar el resultado hasta un 75% ($0.75$).
+* **4.1. Techo de seguridad del sistema $T_{\text{S}}$ (75%):** El modelo establece que ninguna minoría de protesta puede absorber el $100%$ de la decisión. Se fija un límite teórico donde la fuerza de atracción solo puede arrastrar el resultado hasta un 75% ($0.75$).
 * **4.2. Selección del parámetro $F = 8.5$:** El parámetro $F$ (de $0$ a $10$) actúa como un regulador comunitario. Al seleccionar $F = 8.5$, se activa el 85% ($8.5 / 10$) de la fuerza de atracción máxima permitida por el sistema:
 
-$$W_{\text{máx}} = 0.75 \times \left(\frac{F}{10}\right)$$
+$$W_{\text{max}} = T_{\text{S}} · \frac{F}{10} = 0.75 · \frac{F}{10}$$
 
 
 * **4.3. Tracción resultante:** Multiplicando el techo de seguridad por el nivel de severidad elegido, se obtiene la fuerza de atracción final:
 
-$$\text{Tracción Máxima } (W_{\text{máx}}) = 0.75 \times 0.85 = \mathbf{0.6375 \quad }$$ (63.75%)
+$$\text{Tracción Máxima } (W_{\text{max}}) = 0.75 · 0.85 = \mathbf{0.6375 \quad }$$ (63.75%)
 
 
 
 **5. Reparto de Fuerzas en Máxima Polarización**
-En un escenario de máxima dispersión ($S = 1$), el grupo minoritario que vota por el mandato mínimo ejerce una fuerza de atracción del 63.75% sobre el resultado final, mientras que el grupo que apoya el mandato largo conserva un 36.25% (100% - 63.75%) de resistencia. Esto estabiliza el resultado extremo en $1$ año y $3$ meses ($473$ días) en lugar de colapsar la presidencia al límite inferior de $7$ días.
+En un escenario de máxima dispersión ($S = 1$), el grupo minoritario que vota por el mandato mínimo ejerce una fuerza de atracción del 63.75% sobre el resultado final, mientras que el grupo que apoya el mandato largo conserva un 36.25% (100% - 63.75%) de resistencia. Esto estabiliza el resultado extremo en $1$ año y $3$ meses ($473$ días) en lugar de colapsar la presidencia al límite inferior de $7$ días. El sistema puede colapsar a un periodo aun menor de 1 año si el desacuerdo con el candidato en numero de votos negativos es aún mayor.
