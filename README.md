@@ -13,8 +13,8 @@
 **Definición de variables:**
 
 * $n$: número total de votantes
-* $a_i$: límite inferior del intervalo de preferencia del votante $i$, con $7 \leq a_i \leq 2579$ 
-* $b_i$: límite superior del intervalo de preferencia del votante $i$, con $a_i \leq b_i \leq 2579$
+* $a_i$: límite inferior del intervalo de preferencia del votante $i$, con $a_i \in [7, 2579]$ 
+* $b_i$: límite superior del intervalo de preferencia del votante $i$, con $b_i \in [a_i, 2579]$
 * $m_i$: punto medio del intervalo de preferencia del votante $i$, definido como $m_i = \frac{a_i+b_i}{2}$
 
 ---
@@ -24,19 +24,19 @@
 $$w_i = 1 - \frac{b_i - a_i}{R}$$
 
 
-2. **Centro de Gravedad Inicial ($T_0$):**
+2. **Centro de Gravedad Inicial ($t_0$):**
 
-$$T_0 = \frac{\sum_{i=1}^{n} w_i \cdot m_i}{\sum_{i=1}^{n} w_i} \quad \text{donde } m_i = \frac{a_i + b_i}{2}$$
+$$t_0 = \frac{\sum_{i=1}^{n} w_i \cdot m_i}{\sum_{i=1}^{n} w_i} \quad \text{donde } m_i = \frac{a_i + b_i}{2}$$
 
 
-3. **Ancla del Grupo Inferior ($T_{\text{low}}$):**
+3. **Ancla del Grupo Inferior ($t_{\text{low}}$):**
 
-$$T_{\text{low}} = \frac{\sum_{m_i < T_0} w_i \cdot m_i}{\sum_{m_i < T_0} w_i}$$
+$$t_{\text{low}} = \frac{\sum_{m_i < t_0} w_i \cdot m_i}{\sum_{m_i < t_0} w_i}$$
 
 
 4. **Índice Continuo de Dispersión ($S$):**
 
-$$S = \frac{\sigma}{1286} \quad \text{donde } \sigma = \sqrt{\frac{\sum_{i=1}^{n} w_i \cdot (m_i - T_0)^2}{\sum_{i=1}^{n} w_i}}$$
+$$S = \frac{\sigma}{1286} \quad \text{donde } \sigma = \sqrt{\frac{\sum_{i=1}^{n} w_i \cdot (m_i - t_0)^2}{\sum_{i=1}^{n} w_i}}$$
 
 
 5. **Fuerza de Atracción Gravitacional ($W$):**
@@ -44,9 +44,9 @@ $$S = \frac{\sigma}{1286} \quad \text{donde } \sigma = \sqrt{\frac{\sum_{i=1}^{n
 $$W = 0.6375 \cdot S^2$$
 
 
-6. **Tiempo Final de Mandato ($T$):**
+6. **tiempo Final de Mandato ($t$):**
 
-$$T = (1 - W) \cdot T_0 + W \cdot T_{\text{low}}$$
+$$t = (1 - W) \cdot t_0 + W \cdot t_{\text{low}}$$
 
 
 
