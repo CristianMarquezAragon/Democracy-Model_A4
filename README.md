@@ -36,7 +36,7 @@ $$t_{\text{low}} = \frac{\sum_{m_i < t_0} w_i \cdot m_i}{\sum_{m_i < t_0} w_i}$$
 
 4. **Índice Continuo de Dispersión ($S$):**
 
-$$S = \frac{\sigma}{1286} \quad \text{donde } \sigma = \sqrt{\frac{\sum_{i=1}^{n} w_i \cdot (m_i - t_0)^2}{\sum_{i=1}^{n} w_i}}$$
+$$S = \frac{2·\sigma}{R} \quad \text{donde } \sigma = \sqrt{\frac{\sum_{i=1}^{n} w_i (m_i - t_0)^2}{\sum_{i=1}^{n} w_i}}$$
 
 
 5. **Fuerza de Atracción Gravitacional ($W$):**
