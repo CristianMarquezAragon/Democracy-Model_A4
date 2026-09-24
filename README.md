@@ -13,8 +13,8 @@
 **Definición de variables:**
 
 * $n$: número total de votantes
-* $a_i$: límite inferior del intervalo de preferencia del votante $i$, con $a_i \in [7, 2579]$ 
-* $b_i$: límite superior del intervalo de preferencia del votante $i$, con $b_i \in [a_i, 2579]$
+* $a_i$: límite inferior del intervalo de preferencia del votante $i$, con $a_i \in [7, 2579]$ (días)
+* $b_i$: límite superior del intervalo de preferencia del votante $i$, con $b_i \in [a_i, 2579]$ (días)
 * $m_i$: punto medio del intervalo de preferencia del votante $i$, definido como $m_i = \frac{a_i+b_i}{2}$
 
 ---
