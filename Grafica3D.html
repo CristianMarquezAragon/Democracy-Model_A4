@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modelo TRS - Simulador Interactivo Completo</title>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f6f8;
+            color: #333;
+        }
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 20px;
+        }
+        .panel {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        h1, h2, h3 { margin-top: 0; color: #1a202c; }
+        
+        /* Sliders */
+        .slider-group { margin-bottom: 20px; }
+        .slider-group label {
+            display: flex; justify-content: space-between;
+            font-weight: bold; margin-bottom: 8px; font-size: 14px;
+        }
+        input[type="range"] { width: 100%; margin: 0; }
+        .note { font-size: 12px; color: #718096; margin-top: 5px; }
+
+        /* Panel de Estado Matemático */
+        .state-box {
+            background: #2d3748; color: white;
+            padding: 15px; border-radius: 6px; margin-top: 20px;
+        }
+        .state-box h3 {
+            color: #a0aec0; font-size: 12px; text-transform: uppercase;
+            letter-spacing: 1px; margin-bottom: 15px;
+        }
+        .math-line {
+            font-family: 'Courier New', Courier, monospace; font-size: 14px;
+            margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #4a5568;
+        }
+        .math-line:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .result-highlight {
+            font-size: 20px; font-weight: bold; color: #48bb78; margin-top: 10px; display: block;
+        }
+
+        /* Panel de Diagnóstico Humano */
+        .diagnostic-box {
+            background: #ebf8fa; border: 1px solid #b2e0e6;
+            padding: 15px; border-radius: 6px; margin-top: 20px;
+        }
+        .diagnostic-box h3 { color: #2b6cb0; font-size: 14px; margin-bottom: 10px;}
+        .narrative { font-size: 14px; line-height: 1.5; color: #2c5282; margin-bottom: 15px; }
+        .example-votes {
+            background: #fff; padding: 10px; border-radius: 4px;
+            font-family: monospace; font-size: 12px; color: #4a5568;
+            border: 1px dashed #cbd5e0; white-space: pre-wrap;
+        }
+
+        /* Gráfica 2D (Bolas) */
+        .svg-container {
+            background: white; border: 1px solid #e2e8f0; border-radius: 6px;
+            padding: 10px; margin-top: 15px; text-align: center;
+        }
+        .svg-title { font-size: 12px; font-weight: bold; color: #4a5568; margin-bottom: 5px; }
+        .svg-labels { display: flex; justify-content: space-between; font-size: 10px; color: #718096; }
+
+        /* Gráfica 3D */
+        #plot3d {
+            width: 100%; height: 850px; background: white;
+            border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="panel">
+        <h2>Parámetros TRS</h2>
+        
+        <div class="slider-group">
+            <label><span>Centro de Gravedad (t₀)</span><span id="lbl-t0">1293</span></label>
+            <input type="range" id="t0Slider" min="7" max="2579" step="1" value="1293">
+        </div>
+
+        <div class="slider-group">
+            <label><span>Ancla Inferior (t_low)</span><span id="lbl-tlow">7</span></label>
+            <input type="range" id="tlowSlider" min="7" max="1293" step="1" value="7">
+        </div>
+
+        <div class="slider-group">
+            <label><span>Dispersión Social (S)</span><span id="lbl-s">0.50</span></label>
+            <input type="range" id="sSlider" min="0" max="1" step="0.01" value="0.5">
+        </div>
+
+        <!-- Nuevo: Visualización 2D de Fuerzas -->
+        <div class="svg-container">
+            <div class="svg-title">Batalla de Fuerzas (2D)</div>
+            <svg id="forceSvg" width="100%" height="80" viewBox="0 0 350 80">
+                <!-- Eje base -->
+                <line x1="20" y1="40" x2="330" y2="40" stroke="#cbd5e0" stroke-width="2" />
+                <!-- Conexión de atracción -->
+                <line id="svgLink" x1="50" y1="40" x2="250" y2="40" stroke="#e2e8f0" stroke-width="4" stroke-dasharray="4" />
+                
+                <!-- Bola Azul (t0 - Democracia) -->
+                <circle id="svgT0" cx="250" cy="40" r="20" fill="rgba(66, 153, 225, 0.2)" stroke="#3182ce" stroke-width="2" />
+                <text id="txtT0" x="250" y="70" font-size="10" text-anchor="middle" fill="#2b6cb0">t₀</text>
+
+                <!-- Bola Roja (t_low - Ancla/Castigo) -->
+                <circle id="svgTlow" cx="50" cy="40" r="10" fill="rgba(245, 101, 101, 0.2)" stroke="#e53e3e" stroke-width="2" />
+                <text id="txtTlow" x="50" y="70" font-size="10" text-anchor="middle" fill="#c53030">t_low</text>
+
+                <!-- Bola Verde (t - Resultado Final) -->
+                <circle id="svgTfinal" cx="200" cy="40" r="5" fill="#38a169" />
+                <text id="txtTfinal" x="200" y="25" font-size="10" font-weight="bold" text-anchor="middle" fill="#276749">Resultado</text>
+            </svg>
+            <div class="svg-labels">
+                <span>7 días</span>
+                <span>2579 días</span>
+            </div>
+        </div>
+
+        <!-- Nuevo: Diagnóstico Humano -->
+        <div class="diagnostic-box">
+            <h3>Diagnóstico del Escenario</h3>
+            <div id="narrative-text" class="narrative">Generando diagnóstico...</div>
+            <strong>Ejemplo simulado de votos (JSON):</strong>
+            <div id="example-votes" class="example-votes"></div>
+        </div>
+
+        <!-- Estado Matemático Original -->
+        <div class="state-box">
+            <h3>Estado del Sistema y Cálculo</h3>
+            <div class="math-line">
+                <strong>Fuerza de Atracción (W):</strong><br>
+                W = 0.6375 × (<span id="calc-s">0.50</span>)² = <span id="calc-w" style="color: #ed8936;">0.1594</span> (<span id="calc-w-pct">15.94%</span>)
+            </div>
+            <div class="math-line">
+                <strong>Tiempo Final (t):</strong><br>
+                t = (1 - <span id="calc-w2">0.1594</span>)×<span id="calc-t0">1293</span> + <span id="calc-w3">0.1594</span>×<span id="calc-tlow">7</span>
+                <span class="result-highlight">t = <span id="calc-t-final">1088.08</span> días</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel Derecho: Gráfica -->
+    <div id="plot3d"></div>
+</div>
+
+<script>
+    const W_MAX = 0.6375;
+    let current_t0 = 1293;
+    let current_tlow = 7;
+    let current_s = 0.5;
+
+    const s_vals = [...Array(30)].map((_, i) => i / 29);
+    const t0_vals = [...Array(30)].map((_, i) => 7 + (2579 - 7) * (i / 29));
+
+    const layout = {
+        title: 'Superficie de Resolución (3D)',
+        margin: { l: 0, r: 0, b: 0, t: 40 },
+        scene: {
+            xaxis: { title: 'Dispersión (S)', range: [0, 1] },
+            yaxis: { title: 'Centro (t₀)', range: [7, 2579] },
+            zaxis: { title: 'Tiempo Final (t)', range: [7, 2579] },
+            camera: { eye: {x: 1.5, y: -1.5, z: 1.2} }
+        }
+    };
+
+    function calculate_t(S, t0, tlow) {
+        let W = W_MAX * (S * S);
+        return (1 - W) * t0 + W * tlow;
+    }
+
+    function updateNarrative(S, t0, tlow) {
+        let text = "";
+        
+        // Polarización
+        if (S < 0.2) text += "<strong>Población muy unida:</strong> Hay un gran consenso. ";
+        else if (S < 0.6) text += "<strong>Población con debate moderado:</strong> Existen diferencias de opinión normales. ";
+        else if (S < 0.85) text += "<strong>Población muy polarizada:</strong> La sociedad está dividida en dos bloques enfrentados. ";
+        else text += "<strong>FRACTURA EXTREMA:</strong> La sociedad está totalmente rota en polos opuestos. ";
+
+        // Tendencia general
+        if (t0 > 1800) text += "La mayoría está claramente a favor de mandatos muy largos. ";
+        else if (t0 > 900) text += "La tendencia general busca un mandato equilibrado. ";
+        else text += "La mayoría está claramente en contra, exigiendo mandatos cortos. ";
+
+        // Efecto del castigo
+        let W = W_MAX * (S * S);
+        if (W < 0.05) text += "<br><br>Como hay consenso, el castigo es nulo y se respeta la decisión de la mayoría casi intacta.";
+        else if (W > 0.4) text += "<br><br>⚠️ Debido a la alta polarización, el grupo minoritario enfadado activa una fuerte atracción gravitacional, hundiendo el resultado final hacia su ancla (" + tlow + " días).";
+        else text += "<br><br>El sistema aplica una penalización moderada, restando peso a la mayoría para forzar el acercamiento a los críticos.";
+
+        document.getElementById('narrative-text').innerHTML = text;
+
+        // Generar ejemplo de JSON
+        let v1_min = Math.max(7, tlow - 10);
+        let v1_max = Math.min(2579, tlow + 30);
+        let v2_min = Math.max(7, t0 - 50);
+        let v2_max = Math.min(2579, t0 + 50);
+        
+        let extreme = S > 0.6 ? 2579 : (t0 + 100);
+        if (extreme > 2579) extreme = 2579;
+
+        let jsonStr = `{
+  "votes": [
+    [${v1_min.toFixed(0)}, ${v1_max.toFixed(0)}],  // Bloque Crítico
+    [${v2_min.toFixed(0)}, ${v2_max.toFixed(0)}],  // Mayoría
+    [${(extreme - 100).toFixed(0)}, ${extreme.toFixed(0)}] // Oposición para generar S=${S.toFixed(2)}
+  ]
+}`;
+        document.getElementById('example-votes').innerText = jsonStr;
+    }
+
+    function updateSVG(S, t0, tlow, tfinal, W) {
+        // Mapear de [7, 2579] a pixels [20, 330]
+        const mapX = (val) => 20 + ((val - 7) / (2579 - 7)) * 310;
+        
+        let x0 = mapX(t0);
+        let xlow = mapX(tlow);
+        let xfinal = mapX(tfinal);
+
+        // Actualizar posiciones
+        document.getElementById('svgT0').setAttribute('cx', x0);
+        document.getElementById('txtT0').setAttribute('x', x0);
+        
+        document.getElementById('svgTlow').setAttribute('cx', xlow);
+        document.getElementById('txtTlow').setAttribute('x', xlow);
+        
+        document.getElementById('svgTfinal').setAttribute('cx', xfinal);
+        document.getElementById('txtTfinal').setAttribute('x', xfinal);
+
+        document.getElementById('svgLink').setAttribute('x1', xlow);
+        document.getElementById('svgLink').setAttribute('x2', x0);
+
+        // Dinámica de tamaños (Perímetros)
+        // La bola azul (democracia) empieza en r=25 y encoge hasta r=10
+        let r0 = 10 + 15 * (1 - (W / W_MAX)); 
+        // La bola roja (castigo) empieza en r=5 y crece hasta r=25
+        let rlow = 5 + 20 * (W / W_MAX);
+
+        document.getElementById('svgT0').setAttribute('r', r0);
+        document.getElementById('svgTlow').setAttribute('r', rlow);
+    }
+
+    function updateSystem() {
+        current_t0 = parseFloat(document.getElementById('t0Slider').value);
+        current_s = parseFloat(document.getElementById('sSlider').value);
+        
+        let tlowInput = document.getElementById('tlowSlider');
+        tlowInput.max = current_t0;
+        if (parseFloat(tlowInput.value) > current_t0) tlowInput.value = current_t0;
+        current_tlow = parseFloat(tlowInput.value);
+
+        document.getElementById('lbl-t0').innerText = current_t0;
+        document.getElementById('lbl-tlow').innerText = current_tlow;
+        document.getElementById('lbl-s').innerText = current_s.toFixed(2);
+
+        let W = W_MAX * (current_s * current_s);
+        let t_final = calculate_t(current_s, current_t0, current_tlow);
+
+        document.getElementById('calc-s').innerText = current_s.toFixed(2);
+        document.getElementById('calc-w').innerText = W.toFixed(4);
+        document.getElementById('calc-w-pct').innerText = (W * 100).toFixed(2) + '%';
+        document.getElementById('calc-w2').innerText = W.toFixed(4);
+        document.getElementById('calc-w3').innerText = W.toFixed(4);
+        document.getElementById('calc-t0').innerText = current_t0;
+        document.getElementById('calc-tlow').innerText = current_tlow;
+        document.getElementById('calc-t-final').innerText = t_final.toFixed(2);
+
+        // Actualizar nuevas visualizaciones
+        updateNarrative(current_s, current_t0, current_tlow);
+        updateSVG(current_s, current_t0, current_tlow, t_final, W);
+
+        let z_matrix = [];
+        for (let i = 0; i < t0_vals.length; i++) {
+            let z_row = [];
+            for (let j = 0; j < s_vals.length; j++) {
+                z_row.push(calculate_t(s_vals[j], t0_vals[i], current_tlow));
+            }
+            z_matrix.push(z_row);
+        }
+
+        let surfaceTrace = {
+            z: z_matrix, x: s_vals, y: t0_vals,
+            type: 'surface', colorscale: 'Viridis', opacity: 0.8,
+            colorbar: { title: 'Tiempo Final (t)', thickness: 15, len: 0.7 },
+            hoverinfo: 'none'
+        };
+
+        let pointTrace = {
+            x: [current_s], y: [current_t0], z: [t_final],
+            type: 'scatter3d', mode: 'markers',
+            marker: { size: 10, color: 'red', symbol: 'circle' },
+            name: 'Estado Actual', text: [`t = ${t_final.toFixed(2)}`], hoverinfo: 'text'
+        };
+
+        Plotly.react('plot3d', [surfaceTrace, pointTrace], layout);
+    }
+
+    document.getElementById('t0Slider').addEventListener('input', updateSystem);
+    document.getElementById('tlowSlider').addEventListener('input', updateSystem);
+    document.getElementById('sSlider').addEventListener('input', updateSystem);
+
+    updateSystem();
+</script>
+</body>
+</html>
