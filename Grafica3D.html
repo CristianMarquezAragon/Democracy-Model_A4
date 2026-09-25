@@ -54,7 +54,7 @@
         }
         .math-line:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
         .result-highlight {
-            font-size: 20px; font-weight: bold; color: #48bb78; margin-top: 10px; display: block;
+            font-size: 18px; font-weight: bold; color: #48bb78; margin-top: 10px; display: block;
         }
 
         /* Panel de Diagnóstico Humano */
@@ -106,24 +106,19 @@
             <input type="range" id="sSlider" min="0" max="1" step="0.01" value="0.5">
         </div>
 
-        <!-- Nuevo: Visualización 2D de Fuerzas -->
+        <!-- Visualización 2D de Fuerzas -->
         <div class="svg-container">
             <div class="svg-title">Batalla de Fuerzas (2D)</div>
             <svg id="forceSvg" width="100%" height="80" viewBox="0 0 350 80">
-                <!-- Eje base -->
                 <line x1="20" y1="40" x2="330" y2="40" stroke="#cbd5e0" stroke-width="2" />
-                <!-- Conexión de atracción -->
                 <line id="svgLink" x1="50" y1="40" x2="250" y2="40" stroke="#e2e8f0" stroke-width="4" stroke-dasharray="4" />
                 
-                <!-- Bola Azul (t0 - Democracia) -->
                 <circle id="svgT0" cx="250" cy="40" r="20" fill="rgba(66, 153, 225, 0.2)" stroke="#3182ce" stroke-width="2" />
                 <text id="txtT0" x="250" y="70" font-size="10" text-anchor="middle" fill="#2b6cb0">t₀</text>
 
-                <!-- Bola Roja (t_low - Ancla/Castigo) -->
                 <circle id="svgTlow" cx="50" cy="40" r="10" fill="rgba(245, 101, 101, 0.2)" stroke="#e53e3e" stroke-width="2" />
                 <text id="txtTlow" x="50" y="70" font-size="10" text-anchor="middle" fill="#c53030">t_low</text>
 
-                <!-- Bola Verde (t - Resultado Final) -->
                 <circle id="svgTfinal" cx="200" cy="40" r="5" fill="#38a169" />
                 <text id="txtTfinal" x="200" y="25" font-size="10" font-weight="bold" text-anchor="middle" fill="#276749">Resultado</text>
             </svg>
@@ -133,7 +128,7 @@
             </div>
         </div>
 
-        <!-- Nuevo: Diagnóstico Humano -->
+        <!-- Diagnóstico Humano -->
         <div class="diagnostic-box">
             <h3>Diagnóstico del Escenario</h3>
             <div id="narrative-text" class="narrative">Generando diagnóstico...</div>
@@ -151,7 +146,8 @@
             <div class="math-line">
                 <strong>Tiempo Final (t):</strong><br>
                 t = (1 - <span id="calc-w2">0.1594</span>)×<span id="calc-t0">1293</span> + <span id="calc-w3">0.1594</span>×<span id="calc-tlow">7</span>
-                <span class="result-highlight">t = <span id="calc-t-final">1088.08</span> días</span>
+                <span class="result-highlight">t = <span id="calc-t-final">3 años, 0 meses, 0 días</span></span>
+                <span style="font-size: 12px; color: #a0aec0;">(<span id="calc-t-raw">1088.08</span> días en total)</span>
             </div>
         </div>
     </div>
@@ -180,6 +176,29 @@
         }
     };
 
+    // Función para convertir días en años, meses y días
+    function format_human_time(days) {
+        let total_days = Math.round(days);
+        if (total_days <= 0) return "0 días";
+        
+        let years = Math.floor(total_days / 365);
+        let rem = total_days % 365;
+        let months = Math.floor(rem / 30);
+        let d = rem % 30;
+        
+        let parts = [];
+        if (years === 1) parts.push("1 año");
+        else if (years > 1) parts.push(years + " años");
+        
+        if (months === 1) parts.push("1 mes");
+        else if (months > 1) parts.push(months + " meses");
+        
+        if (d === 1) parts.push("1 día");
+        else if (d > 1) parts.push(d + " días");
+        
+        return parts.length > 0 ? parts.join(', ') : "0 días";
+    }
+
     function calculate_t(S, t0, tlow) {
         let W = W_MAX * (S * S);
         return (1 - W) * t0 + W * tlow;
@@ -188,26 +207,22 @@
     function updateNarrative(S, t0, tlow) {
         let text = "";
         
-        // Polarización
         if (S < 0.2) text += "<strong>Población muy unida:</strong> Hay un gran consenso. ";
         else if (S < 0.6) text += "<strong>Población con debate moderado:</strong> Existen diferencias de opinión normales. ";
         else if (S < 0.85) text += "<strong>Población muy polarizada:</strong> La sociedad está dividida en dos bloques enfrentados. ";
         else text += "<strong>FRACTURA EXTREMA:</strong> La sociedad está totalmente rota en polos opuestos. ";
 
-        // Tendencia general
         if (t0 > 1800) text += "La mayoría está claramente a favor de mandatos muy largos. ";
         else if (t0 > 900) text += "La tendencia general busca un mandato equilibrado. ";
         else text += "La mayoría está claramente en contra, exigiendo mandatos cortos. ";
 
-        // Efecto del castigo
         let W = W_MAX * (S * S);
         if (W < 0.05) text += "<br><br>Como hay consenso, el castigo es nulo y se respeta la decisión de la mayoría casi intacta.";
-        else if (W > 0.4) text += "<br><br>⚠️ Debido a la alta polarización, el grupo minoritario enfadado activa una fuerte atracción gravitacional, hundiendo el resultado final hacia su ancla (" + tlow + " días).";
+        else if (W > 0.4) text += "<br><br>⚠️ Debido a la alta polarización, el grupo minoritario enfadado activa una fuerte atracción gravitacional, hundiendo el resultado final hacia su ancla (" + format_human_time(tlow) + ").";
         else text += "<br><br>El sistema aplica una penalización moderada, restando peso a la mayoría para forzar el acercamiento a los críticos.";
 
         document.getElementById('narrative-text').innerHTML = text;
 
-        // Generar ejemplo de JSON
         let v1_min = Math.max(7, tlow - 10);
         let v1_max = Math.min(2579, tlow + 30);
         let v2_min = Math.max(7, t0 - 50);
@@ -227,14 +242,12 @@
     }
 
     function updateSVG(S, t0, tlow, tfinal, W) {
-        // Mapear de [7, 2579] a pixels [20, 330]
         const mapX = (val) => 20 + ((val - 7) / (2579 - 7)) * 310;
         
         let x0 = mapX(t0);
         let xlow = mapX(tlow);
         let xfinal = mapX(tfinal);
 
-        // Actualizar posiciones
         document.getElementById('svgT0').setAttribute('cx', x0);
         document.getElementById('txtT0').setAttribute('x', x0);
         
@@ -247,10 +260,7 @@
         document.getElementById('svgLink').setAttribute('x1', xlow);
         document.getElementById('svgLink').setAttribute('x2', x0);
 
-        // Dinámica de tamaños (Perímetros)
-        // La bola azul (democracia) empieza en r=25 y encoge hasta r=10
         let r0 = 10 + 15 * (1 - (W / W_MAX)); 
-        // La bola roja (castigo) empieza en r=5 y crece hasta r=25
         let rlow = 5 + 20 * (W / W_MAX);
 
         document.getElementById('svgT0').setAttribute('r', r0);
@@ -266,8 +276,8 @@
         if (parseFloat(tlowInput.value) > current_t0) tlowInput.value = current_t0;
         current_tlow = parseFloat(tlowInput.value);
 
-        document.getElementById('lbl-t0').innerText = current_t0;
-        document.getElementById('lbl-tlow').innerText = current_tlow;
+        document.getElementById('lbl-t0').innerText = format_human_time(current_t0);
+        document.getElementById('lbl-tlow').innerText = format_human_time(current_tlow);
         document.getElementById('lbl-s').innerText = current_s.toFixed(2);
 
         let W = W_MAX * (current_s * current_s);
@@ -280,9 +290,11 @@
         document.getElementById('calc-w3').innerText = W.toFixed(4);
         document.getElementById('calc-t0').innerText = current_t0;
         document.getElementById('calc-tlow').innerText = current_tlow;
-        document.getElementById('calc-t-final').innerText = t_final.toFixed(2);
+        
+        // Actualizamos el resultado final al formato humano
+        document.getElementById('calc-t-final').innerText = format_human_time(t_final);
+        document.getElementById('calc-t-raw').innerText = t_final.toFixed(2);
 
-        // Actualizar nuevas visualizaciones
         updateNarrative(current_s, current_t0, current_tlow);
         updateSVG(current_s, current_t0, current_tlow, t_final, W);
 
@@ -306,7 +318,10 @@
             x: [current_s], y: [current_t0], z: [t_final],
             type: 'scatter3d', mode: 'markers',
             marker: { size: 10, color: 'red', symbol: 'circle' },
-            name: 'Estado Actual', text: [`t = ${t_final.toFixed(2)}`], hoverinfo: 'text'
+            name: 'Estado Actual', 
+            // Mostramos el tiempo humano al pasar el ratón por encima del punto 3D
+            text: [`t = ${format_human_time(t_final)}`], 
+            hoverinfo: 'text'
         };
 
         Plotly.react('plot3d', [surfaceTrace, pointTrace], layout);
